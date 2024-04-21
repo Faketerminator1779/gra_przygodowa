@@ -7,7 +7,6 @@
 thead {
     height: 64px;
 }
-
 .oddzielenie {
     border: solid black;
     border-collapse: collapse;
@@ -31,4 +30,12 @@ img {
     height: 48px;
     image-rendering: pixelated;
     vertical-align: middle;
+}
+div {
+    Font-Family: "Comic Sans MS", Cursive, Sans-Serif;
+    Font-Size: 17px;
+    Color: #2A362B;
+    Font-Weight: 400;
+    Font-Variant: Small-Caps;
+    Text-Transform: Capitalize;
 }
