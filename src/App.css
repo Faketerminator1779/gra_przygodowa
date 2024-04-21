@@ -4,12 +4,20 @@
     font-family: monospace;
 }
 
+.glowna {
+    display: grid;
+    place-items: center;
+}
+
 thead {
     height: 64px;
 }
 .oddzielenie {
     border: solid black;
     border-collapse: collapse;
+}
+.oddzielenie td {
+    width: 12.5%;
 }
 .plansza {
     width: 432px;

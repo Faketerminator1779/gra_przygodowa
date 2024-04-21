@@ -2,9 +2,9 @@ import kamienImg from '../img/Kamień.png'
 
 class Kamien {
     constructor(x,y,wyglad) {
-      this.x = x;
-      this.y = y;
-      this.wyglad = wyglad
+        this.x = x;
+        this.y = y;
+        this.wyglad = wyglad
     }
 }
 
