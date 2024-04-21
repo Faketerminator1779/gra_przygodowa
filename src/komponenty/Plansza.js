@@ -25,6 +25,14 @@ class Sciana {
       this.wyglad = wyglad;
   }
 }
+
+class MiejsceGracza {
+    constructor(x,y,aktywne) {
+        this.x = x;
+        this.y = y;
+        this.aktywne = aktywne
+    }
+}
 function Plansza({ setWiadomosc }) {
     const [plansza, setPlansza] = useState([]);
     const [gracz, setGracz] = useState(new Gracz(5,5,graczImg,4))
@@ -33,25 +41,35 @@ function Plansza({ setWiadomosc }) {
     const [wysokoscPlanszy, ] = useState(39);
   
     const [sciany, setSciany] = useState([])
-  
+    
+    const [miejsceSave, setMiejsceSave] = useState([
+        new MiejsceGracza(5,5,true),
+        new MiejsceGracza(15,9,false),
+        new MiejsceGracza(7,13,false),
+        new MiejsceGracza(12,14,false),
+        new MiejsceGracza(7,28,false),
+        new MiejsceGracza(10,31,false),
+        new MiejsceGracza(17,30,false),
+        new MiejsceGracza(28,30,false),
+        new MiejsceGracza(29,24,false),
+        new MiejsceGracza(31,21,false),
+        new MiejsceGracza(26,13,false),
+        new MiejsceGracza(33,5,false)
+    ])
     useEffect(() => {
-      // Grubość obwódki
       const gruboscObwodki = 4;
     
-      // Generowanie ścian za pomocą pętli for
       const scianyObwodka = [];
       for (let i = 0; i < wysokoscPlanszy; i++) {
-        // Dodaj ściany na lewej i prawej krawędzi planszy
         for (let k = 0; k < gruboscObwodki; k++) {
-          scianyObwodka.push(new Sciana(k, i, scianaImg)); // Lewa krawędź
-          scianyObwodka.push(new Sciana(szerokoscPlanszy - 1 - k, i, scianaImg)); // Prawa krawędź
+          scianyObwodka.push(new Sciana(k, i, scianaImg));
+          scianyObwodka.push(new Sciana(szerokoscPlanszy - 1 - k, i, scianaImg));
         }
       }
       for (let j = 0; j < szerokoscPlanszy; j++) {
-        // Dodaj ściany na górnej i dolnej krawędzi planszy
         for (let k = 0; k < gruboscObwodki; k++) {
-          scianyObwodka.push(new Sciana(j, k, scianaImg)); // Górna krawędź
-          scianyObwodka.push(new Sciana(j, wysokoscPlanszy - 1 - k, scianaImg)); // Dolna krawędź
+          scianyObwodka.push(new Sciana(j, k, scianaImg));
+          scianyObwodka.push(new Sciana(j, wysokoscPlanszy - 1 - k, scianaImg));
         }
       }
       const wszystkieSciany = [...scianyObwodka, ...scianyData]
@@ -205,47 +223,67 @@ function Plansza({ setWiadomosc }) {
                   newGracz.x = prevGracz.x + 1;
                 }
                 break;
-              default:
+                case 'r':
+                    const save = miejsceSave.find((miejsce) => miejsce.aktywne)
+                    setGracz(new Gracz(save.x,save.y,graczImg,4));
+                    setKamien(kamienieData);
+                    setWiadomosc("")
+                break;
+
+                default:
                 break;
             }
+            console.log(newGracz.x, newGracz.y)
             return newGracz;
           });
         }
       };
-  
+      
       window.addEventListener('keydown', handleKeyDown);
+
       return () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }, );
   
-  
+    useEffect(() => {
+        const miejsceSaveIndex = miejsceSave.findIndex(
+          (miejsce) => miejsce.x === gracz.x && miejsce.y === gracz.y
+        );
+      
+        if (miejsceSaveIndex !== -1) {
+          const noweMiejsceSave = miejsceSave.map((miejsce, index) => {
+            if (index === miejsceSaveIndex) {
+              return { ...miejsce, aktywne: true };
+            } else {
+              return { ...miejsce, aktywne: false };
+            }
+          });
+      
+          setMiejsceSave(noweMiejsceSave);
+        }
+    }, [gracz]);
   
     return (
       <table>
         <tbody>
           {plansza.map((row, rowIndex) => {
-            // Określenie granic zasięgu widzenia gracza
             const startingRow = Math.max(0, gracz.y - gracz.zakresWidzenia);
             const endingRow = Math.min(wysokoscPlanszy - 1, gracz.y + gracz.zakresWidzenia);
-            // Sprawdzenie, czy dany wiersz mieści się w zasięgu widzenia gracza
             if (rowIndex < startingRow || rowIndex > endingRow) {
-              return null; // Pominięcie wierszy poza zasięgiem widzenia gracza
+              return null;
             }
     
             return (
               <tr key={rowIndex} className='plansza'>
                 {row.map((cell, cellIndex) => {
-                  // Określenie granic zasięgu widzenia gracza dla kolumn
                   const startingCol = Math.max(0, gracz.x - gracz.zakresWidzenia);
                   const endingCol = Math.min(szerokoscPlanszy - 1, gracz.x + gracz.zakresWidzenia);
     
-                  // Sprawdzenie, czy dana komórka mieści się w zasięgu widzenia gracza
                   if (cellIndex < startingCol || cellIndex > endingCol) {
-                    return null; // Pominięcie komórek poza zasięgiem widzenia gracza
+                    return null;
                   }
     
-                  // Renderowanie obrazka komórki
                   return <td key={cellIndex} className='plansza'><img src={cell} alt=''/></td>;
                 })}
               </tr>
